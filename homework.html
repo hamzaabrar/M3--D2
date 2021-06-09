@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"/>
+
+    <title>Hello, world!</title>
+    <style>        
+    </style>
+  </head>
+  <body>
+    <div class="text-center my-5">
+      <h1 class="mb-3">Strive Music</h1>
+      <button type="button" class="btn btn-info" id="render">
+        Get Eminem
+      </button>
+    </div>
+
+    <div class="row" id="music"></div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+      crossorigin="anonymous"></script>
+    <script>      
+
+      window.onload = function () {
+        // onload....
+
+          // fetch on load
+          // fetch("https://deezerdevs-deezer.p.rapidapi.com/search?q=eminem", {
+          // IF QUOTA EXCEEDED USE https://striveschool-api.herokuapp.com/api/deezer/
+            fetch("https://striveschool-api.herokuapp.com/api/deezer/search?q=eminem", {
+                method: "GET", // GET request will return a response object
+                // headers: { // for deezer
+                //     "x-rapidapi-key": "0ec992cc71mshb68737b1c37b640p126080jsn329540551cc0",
+                //     "x-rapidapi-host": "deezerdevs-deezer.p.rapidapi.com"
+                // },
+            })
+          // end fetch
+
+          // make data json
+            .then((response) => response.json()) // the body of the response object gets parsed by the json() method and give us back the data in a usable form. Another promise gets returned
+            .then((data) => { // we can chain another then because the previous one is returning a promise, the callback function inside the .then() will have the data available in the data parameter
+              const deezer = data.data
+              console.log(deezer);
+              console.log(deezer.length) // if undefined: your access to data isn't working, check terminal to find property path
+              console.log("deezer[0] title: " + deezer[0].title)
+              console.log("deezer[0] artist.name: " + deezer[0].artist.name)
+              console.log("deezer[0] album.cover: " + deezer[0].album.cover)
+              
+              const renderLink = document.getElementById("render");
+
+              // this is what I need to change to callback --->
+              renderLink.addEventListener("click", function () { // render button function only AFTER data has been fetched
+                console.log("loading music--->");
+                const musicBox = document.getElementById("music"); // reference to the element where we are going to insert the songs
+
+                  for (let i = 0; i < deezer.length; i++) { // <---------------------------- I want to make this a forEach()
+                    // cycle through the data, because it's coming as an array, to have access to the single data                     
+                    const col = document.createElement("div");
+                    col.classList.add("col-2")
+
+                    const card = document.createElement("div");
+                    card.classList.add("card") // creates an outer div with a bootstrap class of card
+
+                    const cardBody = document.createElement("div");
+                    cardBody.classList.add("card-body") // creates an inner div with a bootstrap class of card-body
+
+                    const h5 = document.createElement("h5");
+                    h5.classList.add("card-title") // creates a h5 inside div.card-body
+                    h5.innerText = deezer[i].title;
+                    cardBody.appendChild(h5); // appends h5
+
+                    const p = document.createElement("p");
+                    p.classList.add("card-text") // creates a p inside div.card-body
+                    p.innerText = "Sample text";
+                    cardBody.appendChild(p); // appends p
+
+                    const img = document.createElement("img");
+                    img.classList.add("card-img-top", "img-fluid") // creates an img inside div.card
+                    img.src = deezer[i].album.cover
+                    card.appendChild(img) // appends image
+
+                    card.appendChild(cardBody); // appends div.card-body
+                    col.appendChild(card)
+                    musicBox.appendChild(col); // appends div.card within div#music (the scrolling div)
+                    //REPEATS MULTIPLE TIMES
+                }
+              })
+            })
+            
+          //place CATCH
+          .catch((err) => {
+            console.error(err);
+          });
+          // end CATCH
+
+        console.log("checking data can be accessed first--->")
+      };
+        //end onload...
+
+    </script>
+  </body>
+</html>
